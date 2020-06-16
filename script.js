@@ -42,28 +42,31 @@ function bulletMove(bullet) {
 
 //Проверка попадания
 function isShot(bullet, timer) {
+    //Координаты пули Y
     let topB = bullet.offsetTop;
     let bottomB = bullet.offsetTop + bullet.offsetHeight;
 
     let enemy = document.querySelectorAll('.enemy');
-    if (enemy != null) {
-        let topE = enemy.offsetTop;
-        let bottomE = enemy.offsetTop + enemy.offsetHeight;
+    for (let i = 0; i <= enemy.length - 1; i++) {
+        if (enemy != null) {
+            let topE = enemy[i].offsetTop;
+            let bottomE = enemy[i].offsetTop + enemy[i].offsetHeight;
 
-        let leftB = bullet.offsetLeft;
-        let leftE = enemy.offsetLeft;
+            let leftB = bullet.offsetLeft;
+            let leftE = enemy[i].offsetLeft;
 
-        if (topB >= topE && bottomB <= bottomE && leftB >= leftE) {
-            bullet.remove();
-            enemy.className = 'boom';
-            enemy.style.top = (topE - 50) + 'px'
-            enemy.style.left = (leftE - 50) + 'px'
+            if (topB >= topE && bottomB <= bottomE && leftB >= leftE) {
+                bullet.remove();
+                enemy[i].className = 'boom';
+                enemy[i].style.top = (topE - 50) + 'px'
+                enemy[i].style.left = (leftE - 50) + 'px'
 
-            clearInterval(enemy.dataset.timer);
-            setTimeout(function () {
-                enemy.remove();
-                clearInterval(timer);
-            }, 700)
+                clearInterval(enemy[i].dataset.timer);
+                setTimeout(function () {
+                    enemy[i].remove();
+                    clearInterval(timer);
+                }, 1000)
+            }
         }
     }
 }
@@ -73,7 +76,7 @@ function createEnemy() {
     let enemy = document.createElement('div');
     enemy.className = 'enemy';
     document.body.appendChild(enemy);
-    enemy.style.top = (Math.round(Math.random() * 700)) + 'px'
+    enemy.style.top = (Math.round(Math.random() * 400)) + 'px'
 
     let timerId = setInterval(function () {
         enemy.style.left = enemy.offsetLeft - 10 + 'px';
