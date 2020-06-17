@@ -1,4 +1,5 @@
 let player = document.querySelector('#player')
+let enemyMass = []
 
 document.addEventListener('keydown', function (e) {
     //Вниз
@@ -27,65 +28,92 @@ function createBull() {
 
 //Движение пули
 function bulletMove(bullet) {
-    let timeId = setInterval(function () {
+    timeId()
 
-        bullet.style.left = bullet.offsetLeft + 10 + 'px';
+    function timeId() {
+        bullet.style.left = bullet.offsetLeft + 50 + 'px';
 
-        isShot(bullet, timeId);
+        isShot(bullet);
 
-        if (bullet.offsetLeft > document.body.clientWidth) {
+        if (bullet.offsetLeft < document.body.clientWidth) {
+            requestAnimationFrame(timeId);
+
+        } else {
             bullet.remove();
-            clearInterval(timeId);
         }
-    }, 10)
+    }
 }
 
 //Проверка попадания
-function isShot(bullet, timer) {
+function isShot(bullet) {
     //Координаты пули Y
     let topB = bullet.offsetTop;
     let bottomB = bullet.offsetTop + bullet.offsetHeight;
 
-    let enemy = document.querySelectorAll('.enemy');
-    for (let i = 0; i <= enemy.length - 1; i++) {
-        if (enemy != null) {
-            let topE = enemy[i].offsetTop;
-            let bottomE = enemy[i].offsetTop + enemy[i].offsetHeight;
+    for (let i = 0; i <= enemyMass.length - 1; i++) {
+        if (enemyMass != null) {
+            let topE = enemyMass[i].offsetTop;
+            let bottomE = enemyMass[i].offsetTop + enemyMass[i].offsetHeight;
 
             let leftB = bullet.offsetLeft;
-            let leftE = enemy[i].offsetLeft;
+            let leftE = enemyMass[i].offsetLeft;
 
             if (topB >= topE && bottomB <= bottomE && leftB >= leftE) {
                 bullet.remove();
-                enemy[i].className = 'boom';
-                enemy[i].style.top = (topE - 50) + 'px'
-                enemy[i].style.left = (leftE - 50) + 'px'
+                enemyMass[i].className = 'boom';
+                enemyMass[i].style.top = (topE - 50) + 'px'
+                enemyMass[i].style.left = (leftE - 50) + 'px'
 
-                clearInterval(enemy[i].dataset.timer);
                 setTimeout(function () {
-                    enemy[i].remove();
-                    clearInterval(timer);
+                    enemyMass[i].remove();
                 }, 1000)
             }
         }
     }
 }
 
+//Столкновение с противником
+function isDestroy() {
+    for (let i = 0; i <= enemyMass.length - 1; i++) {
+        let topE = enemyMass[i].offsetTop;
+        let bottomE = enemyMass[i].offsetTop + enemyMass[i].offsetHeight;
+        let topP = player.offsetTop;
+        let bottomP = topP + player.offsetHeight;
+        let leftE = enemyMass[i].offsetLeft;
+        let rightP = player.offsetLeft + player.offsetWidth;
+
+        if (topE >= topP && bottomE <= bottomP && leftE <= rightP) {
+            documen
+            enemyMass[i].className = 'boom';
+            enemyMass[i].style.top = (topE - 50) + 'px'
+            enemyMass[i].style.left = (leftE - 50) + 'px'
+            setTimeout(function () {
+                enemyMass[i].remove();
+            }, 1000)
+        }
+    }
+}
+
+
+
 //Создаем противников
 function createEnemy() {
     let enemy = document.createElement('div');
     enemy.className = 'enemy';
     document.body.appendChild(enemy);
-    enemy.style.top = (Math.round(Math.random() * 400)) + 'px'
+    enemy.style.top = (Math.round(Math.random() * 400)) + 'px';
+    enemyMass.push(enemy)
+    timerId();
 
-    let timerId = setInterval(function () {
-        enemy.style.left = enemy.offsetLeft - 10 + 'px';
-        if (enemy.offsetLeft + enemy.offsetWidth < 0) {
+    function timerId() {
+        enemy.style.left = enemy.offsetLeft - 13 + 'px';
+        if (enemy.offsetLeft + enemy.offsetWidth > 0) {
+            isDestroy();
+            requestAnimationFrame(timerId);
+        } else {
             enemy.remove();
-            clearInterval(timerId)
-        };
-    }, 70);
-    enemy.dataset.timer = timerId;
+        }
+    };
 }
 
 setInterval(function () {
